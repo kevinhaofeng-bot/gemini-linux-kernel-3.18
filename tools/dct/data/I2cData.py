@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2016 MediaTek Inc.
@@ -32,7 +32,7 @@ class BusData:
 class I2cData:
     _i2c_count = 0
     _channel_count = 0
-    _busList = []
+    _busList = {}
 
     def __init__(self):
         self.__varname = ''

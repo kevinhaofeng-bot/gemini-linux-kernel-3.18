@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2016 MediaTek Inc.
@@ -16,14 +16,16 @@ import re
 import os
 import sys
 import string
-import ConfigParser
+import operator
+import configparser
+
 import xml.dom.minidom
 
 
 from data.GpioData import GpioData
 from data.EintData import EintData
-from ModuleObj import ModuleObj
-import ChipObj
+from .ModuleObj import ModuleObj
+from . import ChipObj
 from utility.util import compare
 from utility.util import sorted_key
 from utility.util import log
@@ -40,7 +42,7 @@ class GpioObj(ModuleObj):
         self.__drvCur = False
 
     def get_cfgInfo(self):
-        cp = ConfigParser.ConfigParser(allow_no_value=True)
+        cp = configparser.ConfigParser(allow_no_value=True)
         cp.read(ModuleObj.get_cmpPath())
 
         # get GPIO_FREQ section
@@ -70,15 +72,15 @@ class GpioObj(ModuleObj):
             GpioData._modeMap[op] = temp
 
             data = GpioData()
-            data.set_smtNum(string.atoi(list[len(list)-1]))
+            data.set_smtNum(int(list[len(list)-1]))
             ModuleObj.set_data(self, op.lower(), data)
 
     def read(self, node):
         nodes = node.childNodes
         for node in nodes:
             if node.nodeType == xml.dom.Node.ELEMENT_NODE:
-                if cmp(node.nodeName, 'count') == 0:
-                    GpioData._count = string.atoi(node.childNodes[0].nodeValue)
+                if operator.eq(node.nodeName, 'count'):
+                    GpioData._count = int(node.childNodes[0].nodeValue)
                     continue
 
                 eintNode = node.getElementsByTagName('eint_mode')
@@ -97,19 +99,19 @@ class GpioObj(ModuleObj):
                 iesNode = node.getElementsByTagName('ies')
                 drvCurNode = node.getElementsByTagName('drv_cur')
 
-                num = string.atoi(node.nodeName[4:])
+                num = int(node.nodeName[4:])
                 if num >= len(ModuleObj.get_data(self)):
                     break
                 data = ModuleObj.get_data(self)[node.nodeName]
 
                 if len(eintNode):
                     flag = False
-                    if cmp(eintNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(eintNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_eintMode(flag)
 
                 if len(defmNode):
-                    data.set_defMode(string.atoi(defmNode[0].childNodes[0].nodeValue))
+                    data.set_defMode(int(defmNode[0].childNodes[0].nodeValue))
 
                 if len(modsNode):
                     str = modsNode[0].childNodes[0].nodeValue
@@ -120,13 +122,13 @@ class GpioObj(ModuleObj):
 
                 if len(inpeNode):
                     flag = False
-                    if cmp(inpeNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(inpeNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_inpullEn(flag)
 
                 if len(inpsNode):
                     flag = False
-                    if cmp(inpsNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(inpsNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_inpullSelHigh(flag)
 
@@ -135,19 +137,19 @@ class GpioObj(ModuleObj):
 
                 if len(diriNode):
                     flag = False
-                    if cmp(diriNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(diriNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_inEn(flag)
 
                 if len(diroNode):
                     flag = False
-                    if cmp(diroNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(diroNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_outEn(flag)
 
                 if len(outhNode):
                     flag = False
-                    if cmp(outhNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(outhNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_outHigh(flag)
 
@@ -163,13 +165,13 @@ class GpioObj(ModuleObj):
 
                 if len(smtNode):
                     flag = False
-                    if cmp(smtNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(smtNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_smtEn(flag)
 
                 if len(iesNode):
                     flag = False
-                    if cmp(iesNode[0].childNodes[0].nodeValue, 'true') == 0:
+                    if operator.eq(iesNode[0].childNodes[0].nodeValue, 'true'):
                         flag = True
                     data.set_iesEn(flag)
 
@@ -279,7 +281,7 @@ class GpioObj(ModuleObj):
     def fill_hFile(self):
         gen_str = '''//Configuration for GPIO SMT(Schmidt Trigger) Group output start\n'''
         temp_list = []
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for value in ModuleObj.get_data(self).values():
             value = ModuleObj.get_data(self)[key]
             num = value.get_smtNum()
@@ -294,7 +296,7 @@ class GpioObj(ModuleObj):
 
         gen_str += '''\n\n'''
 
-        sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
+        sorted_list = sorted(list(ModuleObj.get_data(self).keys()), key = compare)
 
         for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
@@ -384,7 +386,7 @@ class GpioObj(ModuleObj):
         gen_str = ''
         #sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
 
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
             for varName in value.get_varNames():
@@ -394,7 +396,7 @@ class GpioObj(ModuleObj):
                     gen_str += '''#define %s_M_EINT\t\tGPIO_MODE_00\n''' %(varName)
 
                 temp_list = []
-                for item in GpioData._specMap.keys():
+                for item in list(GpioData._specMap.keys()):
                     regExp = '[_A-Z0-9:]*%s[_A-Z0-9:]*' %(item.upper())
                     pat = re.compile(regExp)
                     for i in range(0, GpioData._modNum):
@@ -409,7 +411,7 @@ class GpioObj(ModuleObj):
                                 mode_name = mode_name.split('//')[1]
 
                         if pat.match(mode_name):
-                            if cmp(item, 'eint') == 0 and ((value.get_eintMode() or mode_name.find('MD_EINT') != -1)):
+                            if operator.eq(item, 'eint') and ((value.get_eintMode() or mode_name.find('MD_EINT') != -1)):
                                 continue
 
                             gen_str += '''#define %s%s\t\tGPIO_MODE_0%d\n''' %(varName.upper(), GpioData._specMap[item].upper(), i)
@@ -441,7 +443,7 @@ class GpioObj(ModuleObj):
                     if pat.match(mode):
                         gen_str += '''#define %s_CLK\t\tCLK_OUT%s\n''' %(varName, mode[4:])
                         temp = ''
-                        if varName in GpioData._freqMap.keys():
+                        if varName in list(GpioData._freqMap.keys()):
                             temp = GpioData._freqMap[varName]
                         else:
                             temp = 'GPIO_CLKSRC_NONE'
@@ -457,7 +459,7 @@ class GpioObj(ModuleObj):
         gen_str += '''\tgpio_pins_default: gpiodef{\n\t};\n\n'''
 
         #sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
             gen_str += '''\t%s: gpio@%s {\n''' %(key.lower(), key[4:])
@@ -528,7 +530,7 @@ class GpioObj(ModuleObj):
     def fill_pinfunc_hFile(self):
         gen_str = '''#include \"mt65xx.h\"\n\n'''
         #sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
             for i in range(0, GpioData._modNum):
@@ -555,7 +557,7 @@ class GpioObj(ModuleObj):
         gen_str += '''static const struct mtk_desc_pin mtk_pins_%s[] = {\n''' %(ModuleObj.get_chipId().lower())
 
         #sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
             gen_str += '''\tMTK_PIN(\n'''
@@ -583,7 +585,7 @@ class GpioObj(ModuleObj):
         gen_str = '''&gpio_usage_mapping {\n'''
 
         #sorted_list = sorted(ModuleObj.get_data(self).keys(), key = compare)
-        for key in sorted_key(ModuleObj.get_data(self).keys()):
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
         #for key in sorted_list:
             value = ModuleObj.get_data(self)[key]
             for varName in value.get_varNames():
