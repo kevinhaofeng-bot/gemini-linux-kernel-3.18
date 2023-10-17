@@ -1,37 +1,39 @@
-Source: gemian-modular-kernel
+Source: gemini-linux-kernel
 Section: kernel
 Priority: extra
 Maintainer: Adam Boardman <adamboardman@gmail.com>
 Build-Depends:
- python,
+ python3,
  git,
  ca-certificates,
  bc,
  curl,
  gcc-aarch64-linux-gnu,
+ device-tree-compiler
 Standards-Version: 3.9.8
 Vcs-Git: https://github.com/gemian/gemini-linux-kernel-3.18.git
 Homepage: https://www.kernel.org/
 
-Package: gemian-modular-kernel
+Package: gemini-linux-kernel
 Architecture: any
 Multi-Arch: same
 Depends:
  mkbootimg,
  initramfs-tools-halium,
-Conflicts: gemini-kernel-image-3.18
-Replaces: gemini-kernel-image-3.18
+Conflicts: gemini-kernel-image-3.18, gemian-modular-kernel, planet-linux-kernel
+Provides: planet-linux-kernel
+Replaces: gemini-kernel-image-3.18, gemian-modular-kernel
 Recommends:
-Description: Gemian Kernel with Modules
+Description: Gemian Kernel with Modules for Gemini PDA
  .
 
-Package: gemian-modular-kernel-headers
+Package: gemini-linux-kernel-headers
 Architecture: all
 Multi-Arch: foreign
 Depends:
- gemian-modular-kernel,
+ gemini-linux-kernel,
 Conflicts:
 Replaces:
 Recommends:
-Description: Headers for Gemian Kernel with Modules
+Description: Headers for Gemian Kernel with Modules for Gemini PDA
  .
