@@ -176,19 +176,19 @@ class I2cObj_MT6759(I2cObj):
 
 
             if self._bBusEnable:
-                gen_str += '''\tclock-frequency = <%d>;\n''' %(string.atoi(self._busList[i].get_speed()) * 1000)
+                gen_str += '''\tclock-frequency = <%d>;\n''' %(int(self._busList[i].get_speed()) * 1000)
                 temp_str = ''
 
-                if cmp(self._busList[i].get_enable(), 'false') == 0:
+                if operator.eq(self._busList[i].get_enable(), 'false'):
                     temp_str = 'use-open-drain'
-                elif cmp(self._busList[i].get_enable(), 'true') == 0:
+                elif operator.eq(self._busList[i].get_enable(), 'true'):
                     temp_str = 'use-push-pull'
                 gen_str += '''\tmediatek,%s;\n''' %(temp_str)
 
             for key in sorted_key(ModuleObj.get_data(self).keys()):
                 value = ModuleObj.get_data(self)[key]
                 channel = 'I2C_CHANNEL_%d' %(i)
-                if cmp(value.get_channel(), channel) == 0 and cmp(value.get_varName(), 'NC') != 0 and value.get_address().strip() != '':
+                if operator.eq(value.get_channel(), channel) and operator.eq(value.get_varName(), 'NC') != True and value.get_address().strip() != '':
                     gen_str += '''\t%s_mtk:%s@%s {\n''' %(value.get_varName().lower(), value.get_varName().lower(), value.get_address()[2:].lower())
                     gen_str += '''\t\tcompatible = \"mediatek,%s\";\n''' %(value.get_varName().lower())
                     gen_str += '''\t\treg = <%s>;\n''' %(value.get_address().lower())
