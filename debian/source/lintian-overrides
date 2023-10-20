@@ -1,3 +1,0 @@
-gemian-modular-kernel source: source-is-missing scripts/mkimage
-gemian-modular-kernel source: source-is-missing scripts/dtc/dtc_overlay
-gemian-modular-kernel source: source-is-missing tools/dct/old_dct/DrvGen
