@@ -14,15 +14,11 @@ build-stamp:
 	@echo configuring
 	make O=../KERNEL_OUT_GEMINI_3.18 ARCH=arm64 gemini_modular_defconfig
 ifneq ($(DEB_HOST_ARCH), arm64)
-	@echo building kernel
+	@echo building kernel cross
 	make O=../KERNEL_OUT_GEMINI_3.18 ARCH=arm64 CROSS_COMPILE=/usr/bin/aarch64-linux-gnu- -j1
-	@echo building modules
-	make O=../KERNEL_OUT_GEMINI_3.18 ARCH=arm64 modules CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
 else
 	@echo building kernel
 	make O=../KERNEL_OUT_GEMINI_3.18 ARCH=arm64 -j1
-	@echo building modules
-	make O=../KERNEL_OUT_GEMINI_3.18 ARCH=arm64 modules
 endif
 	@echo done
 

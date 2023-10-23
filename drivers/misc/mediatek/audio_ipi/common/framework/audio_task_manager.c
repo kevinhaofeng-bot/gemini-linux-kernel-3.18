@@ -22,6 +22,7 @@
 #include <linux/spinlock.h>
 
 #include <linux/mutex.h>
+#include <linux/io.h>
 
 #include <scp_ipi.h>
 #ifdef CONFIG_MTK_DO /* TODO: check only once in one file */
