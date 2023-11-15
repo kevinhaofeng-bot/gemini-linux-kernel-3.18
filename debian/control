@@ -1,6 +1,6 @@
 Source: gemini-linux-kernel
 Section: kernel
-Priority: extra
+Priority: optional
 Maintainer: Adam Boardman <adamboardman@gmail.com>
 Build-Depends:
  python3,
@@ -20,8 +20,7 @@ Multi-Arch: same
 Depends:
  mkbootimg,
  initramfs-tools-halium,
-Conflicts: gemini-kernel-image-3.18, gemian-modular-kernel, planet-linux-kernel
-Provides: planet-linux-kernel
+Conflicts: gemini-kernel-image-3.18, gemian-modular-kernel
 Replaces: gemini-kernel-image-3.18, gemian-modular-kernel
 Recommends:
 Description: Gemian Kernel with Modules for Gemini PDA
