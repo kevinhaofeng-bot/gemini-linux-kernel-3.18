@@ -28,9 +28,11 @@ clean: checkdir
 binary-arch:
 	-rm -rf debian/tmp
 	install -p -d -o root -g root -m 755 debian/tmp
+	install -p -d -o root -g root -m 755 debian/tmp/boot
 	install -p -d -o root -g root -m 755 debian/tmp/DEBIAN
 	install -p -d -o root -g root -m 755 debian/tmp/usr/share/kernel
 	install -p    -o root -g root -m 644 ../KERNEL_OUT_GEMINI_3.18/arch/arm64/boot/Image.gz-dtb debian/tmp/usr/share/kernel/Gemini-Image.gz-dtb
+	install -p    -o root -g root -m 644 ../KERNEL_OUT_GEMINI_3.18/.config debian/tmp/boot/config-3.18.79
 	install -p    -o root -g root -m 755 debian/postinst debian/tmp/DEBIAN/
 	make O=../KERNEL_OUT_GEMINI_3.18 INSTALL_MOD_PATH=$(CURDIR)/debian/tmp ARCH=arm64 modules_install
 	unlink debian/tmp/lib/modules/3.18.79*/source
